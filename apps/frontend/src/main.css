@@ -1,18 +1,6 @@
+/* 导入动画样式 */
+@import "./styles/animations.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* 直接测试 main.css 是否被加载 */
-.test-manual {
-  width: 4rem;
-  height: 4rem;
-  background: red;
-}
-
-@layer utilities {
-  .test-layer {
-    background: green;
-    width: 4rem;
-    height: 4rem;
-  }
-}

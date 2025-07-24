@@ -229,6 +229,8 @@ export function useFileUpload() {
   // 刷新速度和剩余时间
   const updateSpeedAndEta = (id: string) => {
     const fileData = uploads[id];
+    if (!fileData) return; // 添加安全检查
+
     const now = Date.now();
     const deltaSize = fileData.uploadedSize - (fileData._lastUploadedSize || 0);
     const deltaTime = (now - (fileData._lastTimestamp || now)) / 1000;
@@ -250,6 +252,8 @@ export function useFileUpload() {
   const MAX_RETRY = 3;
   const uploadChunk = async (fileId: string, chunkIndex: number, retry = 0) => {
     const fileData = uploads[fileId];
+    if (!fileData) return; // 添加文件数据检查
+
     const chunk = fileData.chunks[chunkIndex];
 
     // 只处理有 file 字段的上传
@@ -259,7 +263,7 @@ export function useFileUpload() {
       chunk.status = "uploading";
 
       const formData = new FormData();
-      formData.append("fileId", fileId);
+      formData.append("fileId", fileData.hash); // 使用 hash 作为 fileId
       formData.append("chunkIndex", String(chunkIndex));
       formData.append("chunkHash", chunk.hash);
       const blob = fileData.file.slice(chunk.start, chunk.end);
@@ -279,35 +283,62 @@ export function useFileUpload() {
       }
 
       chunk.status = "completed";
-      fileData.uploadedSize = fileData.chunks.reduce(
+
+      // 重新获取最新的文件数据，避免竞态条件
+      const currentFileData = uploads[fileId];
+      if (!currentFileData) return;
+
+      // 修正：确保进度只能递增，重新计算已上传大小和进度
+      const newUploadedSize = currentFileData.chunks.reduce(
         (sum, c) => sum + (c.status === "completed" ? c.size : 0),
         0
       );
-      fileData.progress = Math.round(
-        (fileData.uploadedSize / fileData.size) * 100
+      const newProgress = Math.round(
+        (newUploadedSize / currentFileData.size) * 100
       );
-      updateSpeedAndEta(fileId);
-      // 检查是否所有分片都上传完成
-      if (fileData.progress === 100) {
-        fileData.status = "completed";
-        if ((fileData as any)._timer) {
-          clearInterval((fileData as any)._timer);
-          (fileData as any)._timer = null;
-        }
-        completeUpload(fileId);
+
+      // 确保进度只能递增
+      if (
+        newUploadedSize >= currentFileData.uploadedSize &&
+        newProgress >= currentFileData.progress
+      ) {
+        currentFileData.uploadedSize = newUploadedSize;
+        currentFileData.progress = newProgress;
       }
-      saveUpload(fileData as UploadFile);
+
+      // 检查文件是否还存在再更新速度
+      if (uploads[fileId]) {
+        updateSpeedAndEta(fileId);
+      }
+
+      // 检查是否所有分片都上传完成
+      if (currentFileData.progress === 100) {
+        currentFileData.status = "completed";
+        if ((currentFileData as any)._timer) {
+          clearInterval((currentFileData as any)._timer);
+          (currentFileData as any)._timer = null;
+        }
+        // 延迟调用 completeUpload，确保所有分片都处理完成
+        setTimeout(() => completeUpload(fileId), 100);
+      }
+
+      if (uploads[fileId]) {
+        saveUpload(currentFileData as UploadFile);
+      }
     } catch (error) {
       console.error(`Upload chunk failed (try ${retry + 1}):`, error);
       if (retry < MAX_RETRY - 1) {
-        // 失败重试
+        // 失败重试时重置分片状态
+        chunk.status = "pending";
         setTimeout(
           () => uploadChunk(fileId, chunkIndex, retry + 1),
           1000 * (retry + 1)
         );
       } else {
         chunk.status = "failed";
-        saveUpload(fileData as UploadFile);
+        if (uploads[fileId]) {
+          saveUpload(fileData as UploadFile);
+        }
       }
     }
   };
@@ -315,6 +346,10 @@ export function useFileUpload() {
   // 完成上传
   const completeUpload = async (fileId: string) => {
     const fileData = uploads[fileId];
+    if (!fileData) {
+      console.error("File data not found for completion:", fileId);
+      return;
+    }
 
     try {
       // 传 fileHash 参与后端合并校验
@@ -322,7 +357,7 @@ export function useFileUpload() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fileId: fileData.id,
+          fileId: fileData.hash, // 使用 hash 作为 fileId
           fileName: fileData.name,
           chunks: fileData.chunks.length,
           fileHash: fileData.hash,

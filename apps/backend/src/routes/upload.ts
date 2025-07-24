@@ -66,54 +66,83 @@ router.post("/upload-chunk", async (ctx: Context) => {
 
 // 合并分片接口
 router.post("/complete-upload", async (ctx: Context) => {
-  const { fileId, fileName, chunks } = ctx.request.body as {
+  const { fileId, fileName, chunks, fileHash } = ctx.request.body as {
     fileId: string;
     fileName: string;
     chunks: number;
+    fileHash?: string;
   };
+
+  console.log("Complete upload request:", {
+    fileId,
+    fileName,
+    chunks,
+    fileHash,
+  });
+
   if (!fileId || !fileName || !chunks) {
     ctx.status = 400;
     ctx.body = { error: "参数缺失" };
     return;
   }
+
   const chunkDir = path.join(UPLOAD_DIR, fileId);
   const filePath = path.join(UPLOAD_DIR, fileName);
+
+  console.log("Chunk dir:", chunkDir);
+  console.log("File path:", filePath);
+
+  // 检查分片目录是否存在
+  if (!(await fs.pathExists(chunkDir))) {
+    ctx.status = 400;
+    ctx.body = { error: `分片目录不存在: ${chunkDir}` };
+    return;
+  }
+
   const writeStream = fs.createWriteStream(filePath);
+
   try {
     // 合并文件
     for (let i = 0; i < chunks; i++) {
       const chunkPath = path.join(chunkDir, String(i));
+      console.log(`Processing chunk ${i}: ${chunkPath}`);
+
       if (await fs.pathExists(chunkPath)) {
-        await new Promise<void>((resolve) => {
+        await new Promise<void>((resolve, reject) => {
           const readStream = fs.createReadStream(chunkPath);
           readStream.pipe(writeStream, { end: false });
           readStream.on("end", resolve);
+          readStream.on("error", reject);
         });
         await fs.remove(chunkPath);
       } else {
+        writeStream.destroy();
         ctx.status = 400;
         ctx.body = { error: `缺少分片${i}` };
         return;
       }
     }
+
     writeStream.end();
-    await new Promise<void>((resolve) =>
-      writeStream.on("finish", () => resolve())
-    );
+    await new Promise<void>((resolve, reject) => {
+      writeStream.on("finish", resolve);
+      writeStream.on("error", reject);
+    });
+
     // 合并后 hash 校验
     const mergedBuffer = await fs.readFile(filePath);
     const mergedHash = crypto
       .createHash("sha1")
       .update(mergedBuffer)
       .digest("hex");
-    // 前端需传 fileHash
-    const { fileHash } = ctx.request.body as { fileHash?: string };
+
     if (fileHash && mergedHash !== fileHash) {
       ctx.status = 400;
       ctx.body = { error: "合并后文件 hash 校验失败", mergedHash, fileHash };
       await fs.remove(filePath);
       return;
     }
+
     // 合并成功后清理分片目录及所有残留分片
     try {
       await fs.remove(chunkDir);
@@ -121,8 +150,10 @@ router.post("/complete-upload", async (ctx: Context) => {
       // 忽略清理异常，保证主流程不受影响
       console.warn("清理分片目录失败:", e);
     }
+
     ctx.body = { success: true, filePath, mergedHash };
   } catch (err) {
+    console.error("Merge error:", err);
     ctx.status = 500;
     ctx.body = { error: "合并失败", detail: String(err) };
   }
