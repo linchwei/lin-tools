@@ -21,7 +21,16 @@
         </div>
 
         <div class="flex-1 p-4">
-          <el-input v-model="inputCode" type="textarea" :rows="20" placeholder="请输入接口定义..." class="h-full" />
+          <div class="relative h-full">
+            <textarea v-model="inputCode" @input="highlightInput"
+              class="absolute inset-0 w-full h-full p-4 font-mono text-sm bg-transparent text-transparent caret-gray-800 resize-none outline-none z-10"
+              placeholder="请输入接口定义..." spellcheck="false" />
+            <pre class="absolute inset-0 w-full h-full p-4 font-mono text-sm bg-gray-50 border rounded overflow-auto"><code 
+              ref="inputHighlight" 
+              :class="`language-${getInputLanguage()}`"
+              v-html="highlightedInput"
+            ></code></pre>
+          </div>
         </div>
       </div>
 
@@ -40,8 +49,11 @@
         </div>
 
         <div class="flex-1 p-4 bg-gray-50">
-          <pre v-if="generatedCode"
-            class="bg-white p-4 rounded border h-full overflow-auto"><code>{{ generatedCode }}</code></pre>
+          <pre v-if="generatedCode" class="bg-white p-4 rounded border h-full overflow-auto"><code 
+            ref="outputHighlight"
+            :class="`language-${getOutputLanguage()}`"
+            v-html="highlightedOutput"
+          ></code></pre>
           <div v-else class="flex items-center justify-center h-full text-gray-500">
             生成的代码将显示在这里
           </div>
@@ -63,6 +75,11 @@ import { ElMessage, ElButton, ElSelect, ElOption, ElInput } from 'element-plus'
 import { parseTypeScript } from '@/utils/astParser'
 import { generateVueComponent, generateKoaRoute, generatePrismaModel } from '@/utils/codeGenerator'
 import { visualizeAST } from '@/utils/astVisualizer'
+import Prism from 'prismjs'
+import 'prismjs/themes/prism-tomorrow.css'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-json'
 
 const inputType = ref('interface')
 const outputType = ref('vue')
@@ -78,6 +95,10 @@ const inputCode = ref(`interface User {
 const generatedCode = ref('')
 const parsedAST = ref<any>(null)
 const astContainer = ref<HTMLElement>()
+const inputHighlight = ref<HTMLElement>()
+const outputHighlight = ref<HTMLElement>()
+const highlightedInput = ref('')
+const highlightedOutput = ref('')
 
 const parseInput = () => {
   try {
@@ -109,6 +130,7 @@ const generateCode = () => {
         generatedCode.value = generatePrismaModel(parsedAST.value)
         break
     }
+    highlightOutput()
     ElMessage.success('代码生成成功')
   } catch (error) {
     ElMessage.error('生成失败: ' + (error as Error).message)
@@ -140,14 +162,64 @@ const getFileExtension = () => {
   return extensions[outputType.value as keyof typeof extensions] || 'txt'
 }
 
+const highlightInput = () => {
+  const language = getInputLanguage()
+  highlightedInput.value = Prism.highlight(inputCode.value, Prism.languages[language], language)
+}
+
+const highlightOutput = () => {
+  if (!generatedCode.value) return
+  const language = getOutputLanguage()
+  highlightedOutput.value = Prism.highlight(generatedCode.value, Prism.languages[language], language)
+}
+
+const getInputLanguage = () => {
+  const languages = {
+    interface: 'typescript',
+    schema: 'json',
+    openapi: 'json'
+  }
+  return languages[inputType.value as keyof typeof languages] || 'typescript'
+}
+
+const getOutputLanguage = () => {
+  const languages = {
+    vue: 'markup',
+    koa: 'typescript',
+    prisma: 'typescript'
+  }
+  return languages[outputType.value as keyof typeof languages] || 'typescript'
+}
+
 onMounted(() => {
   parseInput()
+  highlightInput()
 })
 
-// 监听输出类型变化，自动重新生成代码
+watch(inputType, highlightInput)
 watch(outputType, () => {
   if (parsedAST.value) {
     generateCode()
   }
 })
+watch(inputCode, highlightInput)
 </script>
+
+<style scoped>
+.relative textarea {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  line-height: 1.5;
+}
+
+.relative pre {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  line-height: 1.5;
+  margin: 0;
+}
+
+pre code {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+</style>

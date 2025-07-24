@@ -1,0 +1,159 @@
+// 工具类样式 - 简化版
+@use 'sass:map';
+@use './variables' as vars;
+
+// 间距工具类
+@each $key, $value in vars.$spacing {
+  .m-#{$key} { margin: $value; }
+  .mt-#{$key} { margin-top: $value; }
+  .mr-#{$key} { margin-right: $value; }
+  .mb-#{$key} { margin-bottom: $value; }
+  .ml-#{$key} { margin-left: $value; }
+  .mx-#{$key} { margin-left: $value; margin-right: $value; }
+  .my-#{$key} { margin-top: $value; margin-bottom: $value; }
+  
+  .p-#{$key} { padding: $value; }
+  .pt-#{$key} { padding-top: $value; }
+  .pr-#{$key} { padding-right: $value; }
+  .pb-#{$key} { padding-bottom: $value; }
+  .pl-#{$key} { padding-left: $value; }
+  .px-#{$key} { padding-left: $value; padding-right: $value; }
+  .py-#{$key} { padding-top: $value; padding-bottom: $value; }
+}
+
+// 文本对齐
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+// 字体大小
+@each $key, $value in vars.$font-sizes {
+  .text-#{$key} { font-size: $value; }
+}
+
+// 字体粗细
+@each $key, $value in vars.$font-weights {
+  .font-#{$key} { font-weight: $value; }
+}
+
+// 显示属性
+.block { display: block; }
+.inline-block { display: inline-block; }
+.inline { display: inline; }
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.grid { display: grid; }
+.hidden { display: none; }
+
+// Flexbox 工具类
+.flex-row { flex-direction: row; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+
+// 定位
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+// 宽度和高度
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.w-auto { width: auto; }
+.h-auto { height: auto; }
+
+// 圆角
+@each $key, $value in vars.$border-radius {
+  .rounded-#{$key} { border-radius: $value; }
+}
+
+// 阴影
+.shadow-none { box-shadow: none; }
+.shadow-sm { box-shadow: map.get(vars.$shadows, sm); }
+.shadow-md { box-shadow: map.get(vars.$shadows, md); }
+.shadow-lg { box-shadow: map.get(vars.$shadows, lg); }
+.shadow-xl { box-shadow: map.get(vars.$shadows, xl); }
+
+// 颜色工具类
+@each $key, $value in vars.$gray-colors {
+  .text-gray-#{$key} { color: $value; }
+  .bg-gray-#{$key} { background-color: $value; }
+}
+
+@each $key, $value in vars.$primary-colors {
+  .text-primary-#{$key} { color: $value; }
+  .bg-primary-#{$key} { background-color: $value; }
+}
+
+// 过渡动画
+.transition-none { transition: none; }
+.transition-all { transition: all 0.3s ease; }
+.transition-colors { transition: color 0.3s ease, background-color 0.3s ease; }
+.transition-transform { transition: transform 0.3s ease; }
+
+// 变换
+.scale-95 { transform: scale(0.95); }
+.scale-100 { transform: scale(1); }
+.scale-105 { transform: scale(1.05); }
+.scale-110 { transform: scale(1.1); }
+
+.rotate-0 { transform: rotate(0deg); }
+.rotate-90 { transform: rotate(90deg); }
+.rotate-180 { transform: rotate(180deg); }
+.rotate-270 { transform: rotate(270deg); }
+
+// 透明度
+.opacity-0 { opacity: 0; }
+.opacity-25 { opacity: 0.25; }
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+.opacity-100 { opacity: 1; }
+
+// 光标
+.cursor-auto { cursor: auto; }
+.cursor-pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+// 用户选择
+.select-none { user-select: none; }
+.select-text { user-select: text; }
+.select-all { user-select: all; }
+
+// 溢出
+.overflow-auto { overflow: auto; }
+.overflow-hidden { overflow: hidden; }
+.overflow-visible { overflow: visible; }
+.overflow-scroll { overflow: scroll; }
+
+// 响应式工具类
+@include respond-to(md) {
+  .md\:block { display: block; }
+  .md\:hidden { display: none; }
+  .md\:flex { display: flex; }
+}
+
+@include respond-to(lg) {
+  .lg\:block { display: block; }
+  .lg\:hidden { display: none; }
+  .lg\:flex { display: flex; }
+}
+
+// 移动端优先响应式
+@include mobile-first(md) {
+  .mobile\:block { display: block; }
+  .mobile\:hidden { display: none; }
+  .mobile\:flex { display: flex; }
+}

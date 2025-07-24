@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>离线模式 - Lin Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .offline-container {
+            text-align: center;
+            max-width: 500px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .offline-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .offline-message {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .offline-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .network-status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .cached-content {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .cached-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .cached-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .cached-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cached-item:last-child {
+            border-bottom: none;
+        }
+
+        .cached-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .cached-link:hover {
+            color: white;
+        }
+
+        .cached-status {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @media (max-width: 480px) {
+            .offline-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .offline-icon {
+                font-size: 3rem;
+            }
+
+            .offline-title {
+                font-size: 1.5rem;
+            }
+
+            .offline-message {
+                font-size: 1rem;
+            }
+
+            .offline-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📱</div>
+        <h1 class="offline-title">离线模式</h1>
+        <p class="offline-message">
+            您当前处于离线状态，但您仍然可以访问已缓存的内容。
+            我们会在网络恢复后自动同步您的数据。
+        </p>
+
+        <div class="offline-actions">
+            <button class="btn btn-primary" onclick="checkConnection()">
+                重新连接
+            </button>
+            <a href="/" class="btn btn-secondary">
+                返回首页
+            </a>
+        </div>
+
+        <div class="network-status">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span id="status-text">网络连接中断</span>
+            </div>
+            <div id="last-online">最后在线时间: <span id="last-online-time">--</span></div>
+        </div>
+
+        <div class="cached-content">
+            <h3 class="cached-title">可用的离线内容</h3>
+            <ul class="cached-list" id="cached-list">
+                <li class="cached-item">
+                    <a href="/" class="cached-link">首页</a>
+                    <span class="cached-status">已缓存</span>
+                </li>
+                <li class="cached-item">
+                    <a href="/web-worker" class="cached-link">Web Worker 多线程</a>
+                    <span class="cached-status">已缓存</span>
+                </li>
+                <li class="cached-item">
+                    <a href="/smart-form" class="cached-link">智能表单引擎</a>
+                    <span class="cached-status">已缓存</span>
+                </li>
+                <li class="cached-item">
+                    <a href="/data-dashboard" class="cached-link">实时数据大屏</a>
+                    <span class="cached-status">已缓存</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 检查网络连接
+        function checkConnection() {
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            button.textContent = '检查中...';
+            button.disabled = true;
+            
+            // 尝试获取一个小的资源来测试连接
+            fetch('/favicon.ico', { 
+                method: 'HEAD',
+                cache: 'no-cache'
+            })
+            .then(response => {
+                if (response.ok) {
+                    updateNetworkStatus(true);
+                    // 网络恢复，重新加载页面
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                console.log('仍然离线:', error);
+                updateNetworkStatus(false);
+            })
+            .finally(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+            });
+        }
+
+        // 更新网络状态显示
+        function updateNetworkStatus(isOnline) {
+            const statusText = document.getElementById('status-text');
+            const statusDot = document.querySelector('.status-dot');
+            
+            if (isOnline) {
+                statusText.textContent = '网络已恢复';
+                statusDot.style.background = '#51cf66';
+                statusDot.style.animation = 'none';
+            } else {
+                statusText.textContent = '网络连接中断';
+                statusDot.style.background = '#ff6b6b';
+                statusDot.style.animation = 'blink 1s infinite';
+            }
+        }
+
+        // 监听网络状态变化
+        function setupNetworkListeners() {
+            window.addEventListener('online', () => {
+                updateNetworkStatus(true);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            });
+
+            window.addEventListener('offline', () => {
+                updateNetworkStatus(false);
+            });
+        }
+
+        // 更新最后在线时间
+        function updateLastOnlineTime() {
+            const lastOnlineTime = localStorage.getItem('lastOnlineTime');
+            const lastOnlineElement = document.getElementById('last-online-time');
+            
+            if (lastOnlineTime) {
+                const date = new Date(parseInt(lastOnlineTime));
+                lastOnlineElement.textContent = date.toLocaleString('zh-CN');
+            } else {
+                lastOnlineElement.textContent = '未知';
+            }
+        }
+
+        // 加载缓存内容列表
+        async function loadCachedContent() {
+            try {
+                const cacheNames = await caches.keys();
+                const cachedList = document.getElementById('cached-list');
+                
+                // 清空现有列表
+                cachedList.innerHTML = '';
+                
+                for (const cacheName of cacheNames) {
+                    const cache = await caches.open(cacheName);
+                    const requests = await cache.keys();
+                    
+                    for (const request of requests) {
+                        const url = new URL(request.url);
+                        
+                        // 只显示页面路径
+                        if (url.pathname.endsWith('.html') || url.pathname === '/' || 
+                            (!url.pathname.includes('.') && url.pathname.length > 1)) {
+                            
+                            const listItem = document.createElement('li');
+                            listItem.className = 'cached-item';
+                            
+                            const link = document.createElement('a');
+                            link.href = url.pathname;
+                            link.className = 'cached-link';
+                            link.textContent = getPageTitle(url.pathname);
+                            
+                            const status = document.createElement('span');
+                            status.className = 'cached-status';
+                            status.textContent = '已缓存';
+                            
+                            listItem.appendChild(link);
+                            listItem.appendChild(status);
+                            cachedList.appendChild(listItem);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('加载缓存内容失败:', error);
+            }
+        }
+
+        // 获取页面标题
+        function getPageTitle(pathname) {
+            const titles = {
+                '/': '首页',
+                '/web-worker': 'Web Worker 多线程',
+                '/smart-form': '智能表单引擎',
+                '/data-dashboard': '实时数据大屏',
+                '/offline-optimization': '离线优化方案',
+                '/animation-showcase': 'CSS 动画展示',
+                '/upload': '文件上传',
+                '/big-table': '大数据表格',
+                '/pdf-viewer': 'PDF 预览器',
+                '/image-cropper': '图片裁剪',
+                '/calculator': '计算器',
+                '/calendar': '日历',
+                '/complex-form': '复杂表单',
+                '/component-demo': '组件演示',
+                '/eat-snake': '贪吃蛇游戏'
+            };
+            
+            return titles[pathname] || pathname;
+        }
+
+        // 定期检查网络状态
+        function startNetworkCheck() {
+            setInterval(() => {
+                if (navigator.onLine) {
+                    checkConnection();
+                }
+            }, 30000); // 每30秒检查一次
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            setupNetworkListeners();
+            updateLastOnlineTime();
+            loadCachedContent();
+            startNetworkCheck();
+            
+            // 初始网络状态
+            updateNetworkStatus(navigator.onLine);
+        });
+
+        // 保存当前时间作为最后在线时间
+        if (navigator.onLine) {
+            localStorage.setItem('lastOnlineTime', Date.now().toString());
+        }
+    </script>
+</body>
+</html>

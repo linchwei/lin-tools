@@ -1,0 +1,198 @@
+// 组件样式 - 简化版
+
+// 按钮组件
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  // 按钮尺寸
+  &--sm {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+  
+  &--lg {
+    padding: 12px 24px;
+    font-size: 18px;
+  }
+  
+  // 按钮样式
+  &--primary {
+    background: #3b82f6;
+    color: white;
+    
+    &:hover {
+      background: #2563eb;
+    }
+  }
+  
+  &--secondary {
+    background: #6b7280;
+    color: white;
+    
+    &:hover {
+      background: #4b5563;
+    }
+  }
+  
+  &--outline {
+    background: transparent;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    
+    &:hover {
+      background: #f9fafb;
+    }
+  }
+}
+
+// 卡片组件
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 24px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    transform: translateY(-2px);
+  }
+  
+  &__header {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  &__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  &__content {
+    color: #6b7280;
+    line-height: 1.6;
+  }
+  
+  &__footer {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+}
+
+// 徽章组件
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  &--primary {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+  
+  &--success {
+    background: #dcfce7;
+    color: #166534;
+  }
+  
+  &--warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  
+  &--danger {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+// 加载器组件
+.loader {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// 分割线组件
+.divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 16px 0;
+  
+  &--vertical {
+    width: 1px;
+    height: auto;
+    margin: 0 16px;
+  }
+}
+
+// 工具提示组件
+.tooltip {
+  position: relative;
+  
+  &__content {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #111827;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #111827;
+    }
+  }
+  
+  &:hover &__content {
+    opacity: 1;
+    visibility: visible;
+  }
+}

@@ -280,222 +280,220 @@ const handleAdd = () => {
 const handleEdit = (row, index) => {
   // 编辑逻辑
 }
-<\/script>`
+&lt;/script&gt;\`
 
 // Modal演示方法
 const showConfirmModal = async () => {
-  try {
-    await modalManager.confirm({
-      title: '删除确认',
-      message: '确定要删除这条记录吗？此操作不可恢复。',
-      type: 'warning',
-      confirmText: '确定删除',
-      cancelText: '取消'
-    })
-    ElMessage.success('删除成功！')
-  } catch {
-    ElMessage.info('已取消删除')
-  }
+try {
+await modalManager.confirm({
+title: '删除确认',
+message: '确定要删除这条记录吗？此操作不可恢复。',
+type: 'warning',
+confirmText: '确定删除',
+cancelText: '取消'
+})
+ElMessage.success('删除成功！')
+} catch {
+ElMessage.info('已取消删除')
+}
 }
 
 const showInfoModal = () => {
-  modalManager.info('这是一条信息提示！')
+modalManager.info('这是一条信息提示！')
 }
 
 const showSuccessModal = () => {
-  modalManager.success('操作成功完成！')
+modalManager.success('操作成功完成！')
 }
 
 const showWarningModal = () => {
-  modalManager.warning('请注意相关风险！')
+modalManager.warning('请注意相关风险！')
 }
 
 const showErrorModal = () => {
-  modalManager.error('操作失败，请重试！')
+modalManager.error('操作失败，请重试！')
 }
 
 const showCustomModal = () => {
-  modalManager.show({
-    title: '用户信息表单',
-    component: defineAsyncComponent(() => import('./components/UserForm.vue')),
-    width: '600px',
-    props: {
-      userId: 123
-    },
-    onConfirm: async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      ElMessage.success('保存成功！')
-    }
-  })
+modalManager.show({
+title: '用户信息表单',
+component: defineAsyncComponent(() => import('./components/UserForm.vue')),
+width: '600px',
+props: {
+userId: 123
+},
+onConfirm: async () => {
+await new Promise(resolve => setTimeout(resolve, 1000))
+ElMessage.success('保存成功！')
+}
+})
 }
 
 const showHtmlModal = () => {
-  const htmlContent = 
-    '<div style="padding: 20px;">' +
-      '<h3 style="color: #409EFF; margin-bottom: 16px;">功能特性</h3>' +
-      '<ul style="line-height: 1.8;">' +
-        '<li>✅ 支持HTML内容渲染</li>' +
-        '<li>✅ 支持自定义样式</li>' +
-        '<li>✅ 支持事件绑定</li>' +
-        '<li>✅ 响应式设计</li>' +
-      '</ul>' +
-      '<p style="margin-top: 16px; color: #666;">' +
-        '这是一个使用HTML内容的模态框示例。' +
-      '</p>' +
-    '</div>';
-
-  modalManager.show({
-    title: '富文本内容',
-    html: htmlContent,
-    width: '500px',
-    showCancel: false
-  })
+modalManager.show({
+title: '富文本内容',
+html: `
+  < div style = "padding: 20px;" >
+    <h3 style="color: #409EFF; margin-bottom: 16px;" > 功能特性 </h3>
+      < ul style = "line-height: 1.8;" >
+        <li>✅ 支持HTML内容渲染 </li>
+          <li>✅ 支持自定义样式 </li>
+            <li>✅ 支持事件绑定 </li>
+              <li>✅ 响应式设计 </li>
+                </ul>
+                < p style = "margin-top: 16px; color: #666;" >
+                  这是一个使用HTML内容的模态框示例。
+</p>
+  </div>
+    `,
+width: '500px',
+showCancel: false
+})
 }
 
 const showDraggableModal = () => {
-  modalManager.show({
-    title: '可拖拽模态框',
-    content: '这个模态框可以拖拽移动位置！试试拖拽标题栏。',
-    draggable: true,
-    width: '400px'
-  })
+modalManager.show({
+title: '可拖拽模态框',
+content: '这个模态框可以拖拽移动位置！试试拖拽标题栏。',
+draggable: true,
+width: '400px'
+})
 }
 
 const showAsyncModal = async () => {
-  try {
-    await modalManager.confirm({
-      title: '异步操作确认',
-      message: '这个操作需要3秒钟完成，确定继续吗？',
-      type: 'warning'
-    })
+try {
+await modalManager.confirm({
+title: '异步操作确认',
+message: '这个操作需要3秒钟完成，确定继续吗？',
+type: 'warning'
+})
 
-    // 模拟异步操作
-    const loading = ElLoading.service({
-      lock: true,
-      text: '处理中...',
-      background: 'rgba(0, 0, 0, 0.7)'
-    })
+// 模拟异步操作
+const loading = ElLoading.service({
+lock: true,
+text: '处理中...',
+background: 'rgba(0, 0, 0, 0.7)'
+})
 
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    loading.close()
-    ElMessage.success('异步操作完成！')
-  } catch {
-    ElMessage.info('已取消操作')
-  }
+await new Promise(resolve => setTimeout(resolve, 3000))
+loading.close()
+ElMessage.success('异步操作完成！')
+} catch {
+ElMessage.info('已取消操作')
+}
 }
 
 // Table演示方法
 const handleAdd = () => {
-  modalManager.show({
-    title: '新增用户',
-    component: defineAsyncComponent(() => import('./components/UserForm.vue')),
-    width: '600px',
-    onConfirm: () => {
-      ElMessage.success('新增成功！')
-      handleRefresh()
-    }
-  })
+modalManager.show({
+title: '新增用户',
+component: defineAsyncComponent(() => import('./components/UserForm.vue')),
+width: '600px',
+onConfirm: () => {
+ElMessage.success('新增成功！')
+handleRefresh()
+}
+})
 }
 
 const handleEdit = (row: any, index: number) => {
-  modalManager.show({
-    title: '编辑用户',
-    component: defineAsyncComponent(() => import('./components/UserForm.vue')),
-    props: { userData: row },
-    width: '600px',
-    onConfirm: () => {
-      ElMessage.success('编辑成功！')
-      handleRefresh()
-    }
-  })
+modalManager.show({
+title: '编辑用户',
+component: defineAsyncComponent(() => import('./components/UserForm.vue')),
+props: { userData: row },
+width: '600px',
+onConfirm: () => {
+ElMessage.success('编辑成功！')
+handleRefresh()
+}
+})
 }
 
 const handleDelete = async (row: any, index: number) => {
-  try {
-    await modalManager.confirm({
-      title: '删除确认',
-      message: `确定要删除用户"${row.name}"吗？`,
-      type: 'warning'
-    })
+try {
+await modalManager.confirm({
+title: '删除确认',
+message: `确定要删除用户"${row.name}"吗？`,
+type: 'warning'
+})
 
-    // 模拟删除操作
-    tableData.value.splice(index, 1)
-    total.value--
-    ElMessage.success('删除成功！')
-  } catch {
-    ElMessage.info('已取消删除')
-  }
+// 模拟删除操作
+tableData.value.splice(index, 1)
+total.value--
+ElMessage.success('删除成功！')
+} catch {
+ElMessage.info('已取消删除')
+}
 }
 
 const handleBatchDelete = async (rows: any[]) => {
-  try {
-    await modalManager.confirm({
-      title: '批量删除确认',
-      message: `确定要删除选中的 ${rows.length} 条记录吗？`,
-      type: 'warning'
-    })
+try {
+await modalManager.confirm({
+title: '批量删除确认',
+message: `确定要删除选中的 ${ rows.length } 条记录吗？`,
+type: 'warning'
+})
 
-    ElMessage.success(`成功删除 ${rows.length} 条记录！`)
-    handleRefresh()
-  } catch {
-    ElMessage.info('已取消删除')
-  }
+ElMessage.success(`成功删除 ${ rows.length } 条记录！`)
+handleRefresh()
+} catch {
+ElMessage.info('已取消删除')
+}
 }
 
 const handleView = (row: any) => {
-  const htmlContent = 
-    '<div style="padding: 20px;">' +
-      '<p><strong>ID:</strong> ' + row.id + '</p>' +
-      '<p><strong>姓名:</strong> ' + row.name + '</p>' +
-      '<p><strong>邮箱:</strong> ' + row.email + '</p>' +
-      '<p><strong>电话:</strong> ' + row.phone + '</p>' +
-      '<p><strong>状态:</strong> ' + getStatusText(row.status) + '</p>' +
-      '<p><strong>创建时间:</strong> ' + row.createTime + '</p>' +
-    '</div>';
-
-  modalManager.show({
-    title: '用户详情',
-    html: htmlContent,
-    width: '400px',
-    showCancel: false
-  })
+modalManager.show({
+title: '用户详情',
+html: `
+  < div style = "padding: 20px;" >
+    <p><strong>ID: </strong> ${row.id}</p >
+      <p><strong>姓名: </strong> ${row.name}</p >
+        <p><strong>邮箱: </strong> ${row.email}</p >
+          <p><strong>电话: </strong> ${row.phone}</p >
+            <p><strong>状态: </strong> ${getStatusText(row.status)}</p >
+              <p><strong>创建时间: </strong> ${row.createTime}</p >
+                </div>
+                  `,
+width: '400px',
+showCancel: false
+})
 }
 
 const handleRefresh = () => {
-  tableLoading.value = true
-  setTimeout(() => {
-    tableLoading.value = false
-    ElMessage.success('刷新成功！')
-  }, 1000)
+tableLoading.value = true
+setTimeout(() => {
+tableLoading.value = false
+ElMessage.success('刷新成功！')
+}, 1000)
 }
 
 const handleSearch = (keyword: string) => {
-  console.log('搜索关键词:', keyword)
-  ElMessage.info(`搜索: ${keyword}`)
+console.log('搜索关键词:', keyword)
+ElMessage.info(`搜索: ${ keyword } `)
 }
 
 const handleCurrentChange = (page: number) => {
-  currentPage.value = page
-  console.log('当前页:', page)
+currentPage.value = page
+console.log('当前页:', page)
 }
 
 const handleSizeChange = (size: number) => {
-  pageSize.value = size
-  console.log('每页条数:', size)
+pageSize.value = size
+console.log('每页条数:', size)
 }
 
 const updateTableConfig = () => {
-  console.log('表格配置更新:', tableConfig.value)
+console.log('表格配置更新:', tableConfig.value)
 }
 
 const getStatusType = (status: number) => {
-  const types = ['danger', 'success', 'warning']
-  return types[status] || 'info'
+const types = ['danger', 'success', 'warning']
+return types[status] || 'info'
 }
 
 const getStatusText = (status: number) => {
-  const texts = ['禁用', '正常', '待审核']
-  return texts[status] || '未知'
+const texts = ['禁用', '正常', '待审核']
+return texts[status] || '未知'
 }
 </script>
 

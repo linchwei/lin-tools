@@ -30,12 +30,12 @@
       <div class="flex items-center gap-2">
         <span class="text-sm text-gray-600">工具:</span>
         <el-radio-group v-model="currentTool" size="small">
-          <el-radio-button label="pen">画笔</el-radio-button>
-          <el-radio-button label="eraser">橡皮</el-radio-button>
-          <el-radio-button label="line">直线</el-radio-button>
-          <el-radio-button label="rectangle">矩形</el-radio-button>
-          <el-radio-button label="circle">圆形</el-radio-button>
-          <el-radio-button label="text">文字</el-radio-button>
+          <el-radio-button value="pen">画笔</el-radio-button>
+          <el-radio-button value="eraser">橡皮</el-radio-button>
+          <el-radio-button value="line">直线</el-radio-button>
+          <el-radio-button value="rectangle">矩形</el-radio-button>
+          <el-radio-button value="circle">圆形</el-radio-button>
+          <el-radio-button value="text">文字</el-radio-button>
         </el-radio-group>
       </div>
 

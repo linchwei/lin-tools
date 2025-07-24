@@ -1,0 +1,115 @@
+// SCSS变量定义 - 简化版
+
+// 断点系统
+$breakpoints: (
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+  2xl: 1536px
+);
+
+// 间距系统
+$spacing: (
+  0: 0,
+  1: 4px,
+  2: 8px,
+  3: 12px,
+  4: 16px,
+  5: 20px,
+  6: 24px,
+  8: 32px,
+  10: 40px,
+  12: 48px,
+  16: 64px,
+  20: 80px,
+  24: 96px,
+  32: 128px
+);
+
+// 颜色系统
+$gray-colors: (
+  50: #f9fafb,
+  100: #f3f4f6,
+  200: #e5e7eb,
+  300: #d1d5db,
+  400: #9ca3af,
+  500: #6b7280,
+  600: #4b5563,
+  700: #374151,
+  800: #1f2937,
+  900: #111827
+);
+
+$primary-colors: (
+  50: #eff6ff,
+  100: #dbeafe,
+  200: #bfdbfe,
+  300: #93c5fd,
+  400: #60a5fa,
+  500: #3b82f6,
+  600: #2563eb,
+  700: #1d4ed8,
+  800: #1e40af,
+  900: #1e3a8a
+);
+
+// 字体系统
+$font-sizes: (
+  xs: 12px,
+  sm: 14px,
+  base: 16px,
+  lg: 18px,
+  xl: 20px,
+  2xl: 24px,
+  3xl: 30px,
+  4xl: 36px,
+  5xl: 48px
+);
+
+$font-weights: (
+  light: 300,
+  normal: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+  extrabold: 800
+);
+
+// 圆角系统
+$border-radius: (
+  none: 0,
+  sm: 4px,
+  md: 8px,
+  lg: 12px,
+  xl: 16px,
+  2xl: 24px,
+  full: 50%
+);
+
+// 阴影系统
+$shadows: (
+  sm: (0 1px 2px 0 rgb(0 0 0 / 0.05)),
+  md: (0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06)),
+  lg: (0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05)),
+  xl: (0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)),
+  2xl: (0 25px 50px -12px rgb(0 0 0 / 0.25))
+);
+
+// 过渡动画
+$transitions: (
+  fast: 0.15s ease,
+  normal: 0.3s ease,
+  slow: 0.5s ease,
+  bounce: 0.4s cubic-bezier(0.4, 0, 0.2, 1)
+);
+
+// 层级系统
+$z-indexes: (
+  dropdown: 1000,
+  sticky: 1020,
+  fixed: 1030,
+  modal: 1050,
+  popover: 1060,
+  tooltip: 1070
+);
