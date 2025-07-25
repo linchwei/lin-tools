@@ -145,6 +145,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { Document, Edit, DataAnalysis, TrendCharts } from '@element-plus/icons-vue'
+
 import SmartFormEngine from '@/components/SmartForm/SmartFormEngine.vue'
 import SmartFormAnalyzer from '@/components/SmartForm/SmartFormAnalyzer.vue'
 import type { SmartFormSchema, OptimizationSuggestion } from '@/components/SmartForm/types'

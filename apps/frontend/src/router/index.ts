@@ -79,27 +79,15 @@ const routes = [
     },
   },
   {
-    path: "/data-dashboard",
-    name: "DataDashboard",
-    component: () => import("@/pages/DataDashboard.vue"),
-    meta: {
-      title: "实时数据大屏",
-      icon: "DataBoard",
-      category: "advanced",
-      order: 5,
-      description: "数据可视化大屏展示",
-    },
-  },
-  {
     path: "/data-dashboard-new",
     name: "DataDashboardNew",
-    component: () => import("@/pages/DataDashboardNew.vue"),
+    component: () => import("@/pages/DataDashboard.vue"),
     meta: {
-      title: "数据大屏(重构版)",
+      title: "数据大屏",
       icon: "DataBoard",
       category: "advanced",
       order: 5.1,
-      description: "模块化重构的数据大屏",
+      description: "数据大屏展示",
     },
   },
   // 数据处理
