@@ -90,6 +90,18 @@ const routes = [
       description: "数据可视化大屏展示",
     },
   },
+  {
+    path: "/data-dashboard-new",
+    name: "DataDashboardNew",
+    component: () => import("@/pages/DataDashboardNew.vue"),
+    meta: {
+      title: "数据大屏(重构版)",
+      icon: "DataBoard",
+      category: "advanced",
+      order: 5.1,
+      description: "模块化重构的数据大屏",
+    },
+  },
   // 数据处理
   {
     path: "/big-table",
