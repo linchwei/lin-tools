@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Worker 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .success { background: rgba(34, 197, 94, 0.2); }
+        .error { background: rgba(239, 68, 68, 0.2); }
+        .info { background: rgba(59, 130, 246, 0.2); }
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        #log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Service Worker 测试页面</h1>
+        
+        <div id="sw-status" class="status info">
+            <strong>Service Worker 状态:</strong> <span id="status-text">检查中...</span>
+        </div>
+
+        <div class="controls">
+            <button onclick="registerSW()">注册 Service Worker</button>
+            <button onclick="unregisterSW()">注销 Service Worker</button>
+            <button onclick="updateSW()">更新 Service Worker</button>
+            <button onclick="testCache()">测试缓存</button>
+            <button onclick="clearLog()">清除日志</button>
+        </div>
+
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #888">[${timestamp}]</span> ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(text, type = 'info') {
+            const statusDiv = document.getElementById('sw-status');
+            const statusText = document.getElementById('status-text');
+            statusText.textContent = text;
+            statusDiv.className = `status ${type}`;
+        }
+
+        async function checkSWStatus() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        if (registration.active) {
+                            updateStatus('已注册并激活', 'success');
+                            log('✅ Service Worker 已注册并激活');
+                        } else {
+                            updateStatus('已注册但未激活', 'info');
+                            log('⏳ Service Worker 已注册但未激活');
+                        }
+                    } else {
+                        updateStatus('未注册', 'error');
+                        log('❌ Service Worker 未注册');
+                    }
+                } catch (error) {
+                    updateStatus('检查失败', 'error');
+                    log('❌ 检查 Service Worker 状态失败: ' + error.message);
+                }
+            } else {
+                updateStatus('不支持', 'error');
+                log('❌ 浏览器不支持 Service Worker');
+            }
+        }
+
+        async function registerSW() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    log('🔄 正在注册 Service Worker...');
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    
+                    registration.addEventListener('updatefound', () => {
+                        log('🔄 发现 Service Worker 更新');
+                    });
+
+                    if (registration.active) {
+                        updateStatus('注册成功并激活', 'success');
+                        log('✅ Service Worker 注册成功并激活');
+                    } else {
+                        updateStatus('注册成功，等待激活', 'info');
+                        log('⏳ Service Worker 注册成功，等待激活');
+                    }
+                } catch (error) {
+                    updateStatus('注册失败', 'error');
+                    log('❌ Service Worker 注册失败: ' + error.message);
+                }
+            } else {
+                log('❌ 浏览器不支持 Service Worker');
+            }
+        }
+
+        async function unregisterSW() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        await registration.unregister();
+                        updateStatus('已注销', 'info');
+                        log('✅ Service Worker 注销成功');
+                    } else {
+                        log('⚠️ 没有找到已注册的 Service Worker');
+                    }
+                } catch (error) {
+                    log('❌ Service Worker 注销失败: ' + error.message);
+                }
+            }
+        }
+
+        async function updateSW() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        log('🔄 正在检查 Service Worker 更新...');
+                        await registration.update();
+                        log('✅ Service Worker 更新检查完成');
+                    } else {
+                        log('⚠️ 没有找到已注册的 Service Worker');
+                    }
+                } catch (error) {
+                    log('❌ Service Worker 更新失败: ' + error.message);
+                }
+            }
+        }
+
+        async function testCache() {
+            log('🧪 开始测试缓存功能...');
+            
+            // 测试不同类型的请求
+            const testUrls = [
+                '/favicon.ico',  // 静态资源
+                'https://jsonplaceholder.typicode.com/posts/1',  // API请求
+                'https://via.placeholder.com/150',  // 图片资源
+                'chrome-extension://test',  // 应该被过滤的请求
+                'data:text/plain,test',  // 应该被过滤的请求
+            ];
+
+            for (const url of testUrls) {
+                try {
+                    log(`📡 测试请求: ${url}`);
+                    const response = await fetch(url);
+                    if (response.ok) {
+                        log(`✅ 请求成功: ${url} (${response.status})`);
+                    } else {
+                        log(`⚠️ 请求失败: ${url} (${response.status})`);
+                    }
+                } catch (error) {
+                    log(`❌ 请求错误: ${url} - ${error.message}`);
+                }
+            }
+            
+            log('🧪 缓存测试完成');
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // 页面加载时检查状态
+        window.addEventListener('load', () => {
+            log('🚀 页面加载完成，检查 Service Worker 状态...');
+            checkSWStatus();
+        });
+
+        // 监听 Service Worker 消息
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                log(`📨 收到 Service Worker 消息: ${JSON.stringify(event.data)}`);
+            });
+        }
+    </script>
+</body>
+</html>
