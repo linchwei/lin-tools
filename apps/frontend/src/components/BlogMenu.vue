@@ -15,8 +15,9 @@
         </button>
 
         <!-- 菜单内容 -->
-        <el-menu :default-active="$route.path" router :collapse="isCollapsed" :collapse-transition="true"
-            class="h-full border-none pt-5 transition-all duration-300" :class="isCollapsed ? 'w-16' : 'w-64'">
+        <el-menu :default-active="$route.path" :collapse="isCollapsed" :collapse-transition="true"
+            class="h-full border-none pt-5 transition-all duration-300" :class="isCollapsed ? 'w-16' : 'w-64'"
+            @select="handleMenuSelect">
 
             <template v-for="item in menuItems" :key="item.id">
                 <!-- 单级菜单项 -->
@@ -53,11 +54,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { generateMenuFromRoutes, filterAccessibleMenuItems } from '@/utils/menuGenerator'
 import * as ElementPlusIcons from '@element-plus/icons-vue'
 
 const $route = useRoute()
+const $router = useRouter()
 
 // 动态导入所有图标组件
 const iconComponents = ElementPlusIcons
@@ -89,6 +91,14 @@ const toggleCollapse = () => {
 
     // 触发自定义事件通知App.vue更新布局
     window.dispatchEvent(new CustomEvent('sidebar-toggle'))
+}
+
+// 处理菜单选择 - 使用 Vue Router 进行导航，避免页面刷新
+const handleMenuSelect = (index: string) => {
+    // 只有当路径不同时才进行导航
+    if (index !== $route.path) {
+        $router.push(index)
+    }
 }
 
 // 键盘快捷键支持
